@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: "pixel-sport";
+	src: url("/fonts/pixel-sport-font/pixel-sport.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+}
+
+.pixel-sport {
+	font-family: "pixel-sport", sans-serif;
+}
