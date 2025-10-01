@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 	}
 
 	const body = await req.json();
-	const { title, description, startDate, endDate } = body;
+	const { title, description, startDate, endDate, checkpoints, links } = body;
 
 	try {
 		const user = await prisma.user.findUnique({
@@ -27,7 +27,21 @@ export async function POST(req: Request) {
 				startDate: new Date(startDate),
 				endDate: new Date(endDate),
 				userId: user.id,
+				checkpoints: {
+					create: checkpoints?.map((c: any) => ({
+						title: c.title,
+						date: new Date(c.date),
+						notes: c.notes || null,
+					})),
+				},
+				links: {
+					create: links?.map((l: any) => ({
+						label: l.label,
+						url: l.url,
+					})),
+				},
 			},
+			include: { checkpoints: true, links: true },
 		});
 
 		return NextResponse.json(goal);

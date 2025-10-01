@@ -18,6 +18,9 @@ export default async function getUserGoals() {
 			where: {
 				userId: currentUser.id as string,
 			},
+			include: {
+				links: true,
+			},
 		});
 
 		console.log("Cant get them?");

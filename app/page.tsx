@@ -6,8 +6,13 @@ import getUserGoals from "./actions/getUserGoals";
 const Home = async () => {
 	const currentUser = await getCurrentUser();
 	const userGoals = await getUserGoals();
-	console.log("goals frontened:" + userGoals);
-	return <div>{currentUser && <Dashboard currentUser={currentUser} />}</div>;
+	return (
+		<div>
+			{currentUser && (
+				<Dashboard currentUser={currentUser} userGoals={userGoals} />
+			)}
+		</div>
+	);
 };
 
 export default Home;
