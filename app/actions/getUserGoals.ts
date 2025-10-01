@@ -20,6 +20,7 @@ export default async function getUserGoals() {
 			},
 			include: {
 				links: true,
+				checkpoints: true,
 			},
 		});
 

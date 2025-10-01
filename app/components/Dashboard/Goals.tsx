@@ -96,28 +96,27 @@ const Goals = ({ userGoals, currentUser }: any) => {
 											exit="hidden"
 											className="border-l-[1px] my-[1.5vh] border-neutral-500 ml-[3vw] w-[47vw]"
 										>
-											{["Checkpoint 1", "Checkpoint 2", "Checkpoint 3"].map(
-												(cp, j) => (
-													<motion.div
-														key={j}
-														variants={itemVariants}
-														className={`pl-[1.75vw] ${
-															j !== 2 ? "border-b-[1px] border-neutral-500" : ""
-														} w-full py-[3vh] relative`}
-													>
-														<h2 className="pixel-sport text-[4vh] leading-[3.5vh]">
-															{cp}
-														</h2>
-														<p className="bg-neutral-200 border-[1px] border-neutral-500 rounded-full text-[1.3vh] px-[0.75vw] py-[0.25vh] w-fit my-[1vh] absolute rotate-90 top-[40%] left-[-2.75vw] translate-y-[-50%] font-medium text-black">
-															12/12/2025
-														</p>
-														<p className="text-[1.75vh] font-extralight">
-															Lorem ipsum dolor sit amet consectetur adipisicing
-															elit. Fugiat, obcaecati.
-														</p>
-													</motion.div>
-												)
-											)}
+											{goal.checkpoints.map((cp: any, j: any) => (
+												<motion.div
+													key={j}
+													variants={itemVariants}
+													className={`pl-[2.5vw] ${
+														j !== 2 ? "border-b-[1px] border-neutral-500" : ""
+													} w-full py-[3vh] relative`}
+												>
+													<h2 className="pixel-sport text-[4vh] leading-[3.5vh]">
+														{cp.title}
+													</h2>
+													<p className="bg-neutral-200 border-[1px] border-neutral-500 rounded-full text-[1.3vh] px-[0.75vw] py-[0.25vh] w-fit my-[1vh] absolute rotate-90 top-[40%] left-[-6.25%] translate-y-[-50%] font-medium text-black">
+														{cp.date
+															? new Date(cp.date).toLocaleDateString()
+															: "No date"}
+													</p>
+													<p className="text-[1.75vh] font-extralight">
+														{cp.notes}
+													</p>
+												</motion.div>
+											))}
 										</motion.div>
 									)}
 								</AnimatePresence>
