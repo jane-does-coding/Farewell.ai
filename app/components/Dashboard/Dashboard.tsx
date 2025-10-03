@@ -4,6 +4,8 @@ import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoIosLink } from "react-icons/io";
 import Goals from "./Goals";
+import TodaysTasks from "./TodaysTasks";
+import MonthlyProgression from "./MonthlyProgression";
 
 export default function Dashboard({ currentUser, userGoals }: any) {
 	const pageVariants = {
@@ -50,10 +52,8 @@ export default function Dashboard({ currentUser, userGoals }: any) {
 					className="flex flex-col w-[30vw]"
 					variants={columnVariants}
 				>
-					<h2 className="pixel-sport text-[6vh] leading-[6vh] mb-[1.75vh]">
-						Today's Tasks
-					</h2>
-					<motion.div variants={listVariants}>
+					<TodaysTasks />
+					{/* <motion.div variants={listVariants}>
 						{[
 							{ text: "Drink more water", done: false },
 							{ text: "Wake up at 7am", done: false },
@@ -73,11 +73,11 @@ export default function Dashboard({ currentUser, userGoals }: any) {
 								></span>
 							</motion.div>
 						))}
-					</motion.div>
-					<h2 className="pixel-sport text-[6vh] leading-[6vh] mb-[1.75vh] mt-[5vh]">
+					</motion.div> */}
+					{/* 	<h2 className="pixel-sport text-[6vh] leading-[6vh] mb-[1.75vh] mt-[5vh]">
 						Monthly Progression
-					</h2>
-					<div className="grid grid-cols-4 gap-y-[2vh] items-center justify-center">
+					</h2> */}
+					{/* <div className="grid grid-cols-4 gap-y-[2vh] items-center justify-center">
 						<div className="flex flex-col items-center justify-center">
 							<h2 className="mb-[1vh] text-[2vh] font-extralight">Habit 1</h2>
 							<div className="h-[300px] bg-neutral-100 rounded-[0.5vh] overflow-hidden border-[1px] border-neutral-300 w-[25px] flex flex-col items-center justify-end">
@@ -148,7 +148,8 @@ export default function Dashboard({ currentUser, userGoals }: any) {
 								<div className="bg-blue-300 w-full h-[30px]"></div>
 							</div>
 						</div>
-					</div>
+					</div> */}
+					<MonthlyProgression />
 				</motion.div>
 
 				<Goals userGoals={userGoals} currentUser={currentUser} />

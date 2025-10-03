@@ -1,6 +1,46 @@
-import prisma from "@/app/libs/prismadb";
 import { NextResponse } from "next/server";
+import prisma from "@/app/libs/prismadb";
 import { getServerSession } from "next-auth";
+
+export async function GET() {
+	const session = await getServerSession();
+	if (!session?.user?.email) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
+	try {
+		const user = await prisma.user.findUnique({
+			where: { email: session.user.email },
+			select: { id: true },
+		});
+
+		if (!user)
+			return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+		// include checkpoints, links, and the join table habits -> include the habit itself
+		const goals = await prisma.goal.findMany({
+			where: { userId: user.id },
+			include: {
+				checkpoints: true,
+				links: true,
+				habits: {
+					include: {
+						habit: true,
+					},
+				},
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		return NextResponse.json(goals);
+	} catch (err) {
+		console.error(err);
+		return NextResponse.json(
+			{ error: "Failed to fetch goals" },
+			{ status: 500 }
+		);
+	}
+}
 
 export async function POST(req: Request) {
 	const session = await getServerSession();
@@ -8,43 +48,99 @@ export async function POST(req: Request) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
-	const body = await req.json();
-	const { title, description, startDate, endDate, checkpoints, links } = body;
-
 	try {
+		const body = await req.json();
+		const {
+			title,
+			description,
+			startDate,
+			endDate,
+			checkpoints,
+			links,
+			habits,
+		} = body;
+
 		const user = await prisma.user.findUnique({
 			where: { email: session.user.email },
 		});
-
-		if (!user) {
+		if (!user)
 			return NextResponse.json({ error: "User not found" }, { status: 404 });
-		}
 
+		// create the goal (without habits first)
 		const goal = await prisma.goal.create({
 			data: {
 				title,
-				description,
-				startDate: new Date(startDate),
-				endDate: new Date(endDate),
+				description: description || null,
+				startDate: startDate ? new Date(startDate) : new Date(),
+				endDate: endDate ? new Date(endDate) : new Date(),
 				userId: user.id,
 				checkpoints: {
-					create: checkpoints?.map((c: any) => ({
-						title: c.title,
-						date: new Date(c.date),
-						notes: c.notes || null,
-					})),
+					create:
+						checkpoints?.map((c: any) => ({
+							title: c.title || "",
+							date: c.date ? new Date(c.date) : new Date(),
+							notes: c.notes || null,
+						})) ?? [],
 				},
 				links: {
-					create: links?.map((l: any) => ({
-						label: l.label,
-						url: l.url,
-					})),
+					create:
+						links?.map((l: any) => ({
+							label: l.label || "",
+							url: l.url || "",
+						})) ?? [],
 				},
 			},
-			include: { checkpoints: true, links: true },
 		});
 
-		return NextResponse.json(goal);
+		// attach existing or create new habits then link via GoalHabit
+		if (Array.isArray(habits) && habits.length > 0) {
+			for (const h of habits) {
+				if (h?.id) {
+					// attach existing habit
+					try {
+						await prisma.goalHabit.create({
+							data: {
+								goalId: goal.id,
+								habitId: h.id,
+							},
+						});
+					} catch (e) {
+						// ignore duplicate attach or error
+						console.warn("attach habit error", e);
+					}
+				} else if (h?.name) {
+					// create habit and attach
+					const createdHabit = await prisma.habit.create({
+						data: {
+							name: h.name,
+							userId: user.id,
+						},
+					});
+					await prisma.goalHabit.create({
+						data: {
+							goalId: goal.id,
+							habitId: createdHabit.id,
+						},
+					});
+				}
+			}
+		}
+
+		// finally return the goal with includes
+		const created = await prisma.goal.findUnique({
+			where: { id: goal.id },
+			include: {
+				checkpoints: true,
+				links: true,
+				habits: {
+					include: {
+						habit: true,
+					},
+				},
+			},
+		});
+
+		return NextResponse.json(created);
 	} catch (err) {
 		console.error(err);
 		return NextResponse.json(

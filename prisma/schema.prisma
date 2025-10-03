@@ -46,12 +46,14 @@ model Habit {
 
 model HabitProgression {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  date     DateTime
-  value    Int     
-  
+  date     DateTime @default(now())
+  value    Int      @default(1) 
+  done     Boolean  @default(false)
+
   habit   Habit @relation(fields: [habitId], references: [id])
   habitId String @db.ObjectId
 }
+
 
 model Goal {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId

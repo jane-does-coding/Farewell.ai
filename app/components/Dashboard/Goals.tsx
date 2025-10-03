@@ -5,7 +5,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoIosLink } from "react-icons/io";
 
 const Goals = ({ userGoals, currentUser }: any) => {
-	const [openTimeline, setOpenTimeline] = useState(true);
+	const [openTimelines, setOpenTimelines] = useState<{
+		[key: number]: boolean;
+	}>({});
+
+	const colors = [
+		{ bg: "bg-green-200", border: "border-green-400" },
+		{ bg: "bg-yellow-200", border: "border-yellow-400" },
+		{ bg: "bg-purple-200", border: "border-purple-400" },
+		{ bg: "bg-blue-200", border: "border-blue-400" },
+	];
+
+	const toggleTimeline = (index: number) => {
+		setOpenTimelines((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}));
+	};
 
 	const columnVariants = {
 		hidden: { opacity: 0, y: 20 },
@@ -33,7 +49,7 @@ const Goals = ({ userGoals, currentUser }: any) => {
 			{/* Goals */}
 			<motion.div className="flex flex-col w-[55vw]" variants={columnVariants}>
 				<h2 className="pixel-sport text-[6vh] leading-[6vh]">Your Goals</h2>
-				<motion.div className="flex flex-col w-[50vw]" variants={listVariants}>
+				<motion.div className="flex flex-col w-[55vw]" variants={listVariants}>
 					{userGoals.map((goal: any, i: number) => (
 						<motion.div
 							key={i}
@@ -76,32 +92,37 @@ const Goals = ({ userGoals, currentUser }: any) => {
 								{goal.description}
 							</motion.p>
 
-							{/* Only first goal has timeline */}
 							<>
 								<motion.button
 									variants={itemVariants}
-									onClick={() => setOpenTimeline(!openTimeline)}
+									onClick={() => toggleTimeline(i)}
 									className="flex items-center gap-2 mt-[1vh] text-[2vh] font-medium cursor-pointer"
 								>
-									{openTimeline ? <IoIosArrowDown /> : <IoIosArrowForward />}
+									{openTimelines[i] ? (
+										<IoIosArrowDown />
+									) : (
+										<IoIosArrowForward />
+									)}
 									Timeline
 								</motion.button>
 
 								<AnimatePresence>
-									{openTimeline && (
+									{openTimelines[i] && (
 										<motion.div
 											variants={listVariants}
 											initial="hidden"
 											animate="visible"
 											exit="hidden"
-											className="border-l-[1px] my-[1.5vh] border-neutral-500 ml-[3vw] w-[47vw]"
+											className="border-l-[1px] my-[1.5vh] border-neutral-500 ml-[3vw] w-[52vw]"
 										>
 											{goal.checkpoints.map((cp: any, j: any) => (
 												<motion.div
 													key={j}
 													variants={itemVariants}
 													className={`pl-[2.5vw] ${
-														j !== 2 ? "border-b-[1px] border-neutral-500" : ""
+														j !== goal.checkpoints.length - 1
+															? "border-b-[1px] border-neutral-500"
+															: ""
 													} w-full py-[3vh] relative`}
 												>
 													<h2 className="pixel-sport text-[4vh] leading-[3.5vh]">
@@ -122,6 +143,7 @@ const Goals = ({ userGoals, currentUser }: any) => {
 								</AnimatePresence>
 							</>
 
+							{/* Links */}
 							<div className="flex gap-[0.5vw] mt-[1vh] flex-wrap">
 								{goal.links?.length > 0 &&
 									goal.links.map((link: any, k: number) => (
@@ -139,20 +161,18 @@ const Goals = ({ userGoals, currentUser }: any) => {
 							</div>
 
 							{/* Habits */}
-							<motion.div
-								variants={itemVariants}
-								className="flex gap-[0.5vw] mt-[0.75vh]"
-							>
-								<span className="bg-green-200 rounded-full border-[1px] border-green-400 px-[1vw] py-[0.25vh] text-[1.5vh] font-medium">
-									Workout
-								</span>
-								<span className="bg-yellow-200 rounded-full border-[1px] border-yellow-400 px-[1vw] py-[0.25vh] text-[1.5vh] font-medium">
-									Stretch
-								</span>
-								<span className="bg-purple-200 rounded-full border-[1px] border-purple-400 px-[1vw] py-[0.25vh] text-[1.5vh] font-medium">
-									Drink Water
-								</span>
-							</motion.div>
+							{goal.habits.map((habit: any, h: number) => {
+								const color = colors[h % colors.length];
+								console.log(habit);
+								return (
+									<span
+										key={h}
+										className={`${color.bg} ${color.border} rounded-full px-[1vw] py-[0.25vh] text-[1.5vh] font-medium`}
+									>
+										{habit.habit.name}
+									</span>
+								);
+							})}
 						</motion.div>
 					))}
 				</motion.div>
