@@ -37,7 +37,7 @@ export default function TodaysTasks() {
 				body: JSON.stringify({ habitId }),
 			});
 			if (!res.ok) throw new Error("Failed toggling habit");
-			const updated = await res.json(); // response from your POST route
+			const updated = await res.json();
 
 			setHabits((prev) =>
 				prev.map((h) =>
@@ -49,8 +49,23 @@ export default function TodaysTasks() {
 		}
 	}
 
+	async function deleteHabit(habitId: string) {
+		if (!confirm("Are you sure you want to delete this habit?")) return;
+
+		try {
+			const res = await fetch(`/api/habits/${habitId}`, {
+				method: "DELETE",
+			});
+			if (!res.ok) throw new Error("Failed to delete habit");
+
+			setHabits((prev) => prev.filter((h) => h.id !== habitId));
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
 	return (
-		<div className=" w-full ">
+		<div className="w-full">
 			<h2 className="pixel-sport text-[6vh] leading-[6vh] mb-[1.75vh]">
 				Today's Tasks
 			</h2>
@@ -63,14 +78,26 @@ export default function TodaysTasks() {
 
 			<div className="space-y-2">
 				{habits.map((habit) => (
-					<div key={habit.id} className="flex items-center justify-between">
+					<div
+						key={habit.id}
+						className="flex items-center justify-between gap-4"
+					>
 						<span className="text-[2.5vh]">{habit.name}</span>
-						<input
-							type="checkbox"
-							checked={habit.doneToday}
-							onChange={() => toggleHabit(habit.id)}
-							className="w-5 h-5 cursor-pointer"
-						/>
+
+						<div className="flex items-center gap-2">
+							<input
+								type="checkbox"
+								checked={habit.doneToday}
+								onChange={() => toggleHabit(habit.id)}
+								className="w-5 h-5 cursor-pointer"
+							/>
+							<button
+								onClick={() => deleteHabit(habit.id)}
+								className="text-red-500 text-[1.5vh] px-2 py-0.5 border border-red-500 rounded hover:bg-red-500 hover:text-white transition"
+							>
+								Delete
+							</button>
+						</div>
 					</div>
 				))}
 			</div>

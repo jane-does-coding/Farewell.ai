@@ -16,7 +16,6 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
- 
   tasks   Task[]
   goals   Goal[]
   habits  Habit[]
@@ -50,10 +49,9 @@ model HabitProgression {
   value    Int      @default(1) 
   done     Boolean  @default(false)
 
-  habit   Habit @relation(fields: [habitId], references: [id])
+  habit   Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
   habitId String @db.ObjectId
 }
-
 
 model Goal {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -74,10 +72,10 @@ model Goal {
 model GoalHabit {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   
-  goal   Goal  @relation(fields: [goalId], references: [id])
+  goal   Goal  @relation(fields: [goalId], references: [id], onDelete: Cascade)
   goalId String @db.ObjectId
 
-  habit   Habit  @relation(fields: [habitId], references: [id])
+  habit   Habit  @relation(fields: [habitId], references: [id], onDelete: Cascade)
   habitId String @db.ObjectId
 }
 
@@ -87,7 +85,7 @@ model Checkpoint {
   date      DateTime
   notes     String?
 
-  goal   Goal @relation(fields: [goalId], references: [id])
+  goal   Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
   goalId String @db.ObjectId
 }
 
@@ -96,6 +94,6 @@ model Link {
   label String
   url   String
 
-  goal   Goal @relation(fields: [goalId], references: [id])
+  goal   Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
   goalId String @db.ObjectId
 }

@@ -16,7 +16,6 @@ export async function POST(req: Request) {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
-		// Try to find an existing progression entry for today
 		let progress = await prisma.habitProgression.findFirst({
 			where: { habitId, date: today },
 		});

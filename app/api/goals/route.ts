@@ -17,7 +17,6 @@ export async function GET() {
 		if (!user)
 			return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-		// include checkpoints, links, and the join table habits -> include the habit itself
 		const goals = await prisma.goal.findMany({
 			where: { userId: user.id },
 			include: {
@@ -66,7 +65,6 @@ export async function POST(req: Request) {
 		if (!user)
 			return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-		// create the goal (without habits first)
 		const goal = await prisma.goal.create({
 			data: {
 				title,
@@ -92,11 +90,9 @@ export async function POST(req: Request) {
 			},
 		});
 
-		// attach existing or create new habits then link via GoalHabit
 		if (Array.isArray(habits) && habits.length > 0) {
 			for (const h of habits) {
 				if (h?.id) {
-					// attach existing habit
 					try {
 						await prisma.goalHabit.create({
 							data: {
@@ -105,11 +101,9 @@ export async function POST(req: Request) {
 							},
 						});
 					} catch (e) {
-						// ignore duplicate attach or error
 						console.warn("attach habit error", e);
 					}
 				} else if (h?.name) {
-					// create habit and attach
 					const createdHabit = await prisma.habit.create({
 						data: {
 							name: h.name,
@@ -126,7 +120,6 @@ export async function POST(req: Request) {
 			}
 		}
 
-		// finally return the goal with includes
 		const created = await prisma.goal.findUnique({
 			where: { id: goal.id },
 			include: {
