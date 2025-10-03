@@ -1,6 +1,7 @@
 "use client";
-
+import { FaRegTrashAlt } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Checkpoint = { title: string; date: string; notes?: string };
 type LinkItem = { label: string; url: string };
@@ -123,8 +124,30 @@ export default function CreateGoalPage() {
 		}
 	};
 
+	const validateGoal = () => {
+		if (!goal.title.trim()) return "Goal title is required.";
+		if (!goal.description.trim() || goal.description.trim().length < 50)
+			return "Goal description must be at least 50 characters.";
+		if (!goal.startDate) return "Start date is required.";
+		if (!goal.endDate) return "End date is required.";
+		if (goal.checkpoints.length < 3)
+			return "You must add at least 3 checkpoints.";
+		for (const cp of goal.checkpoints) {
+			if (!cp.title.trim()) return "All checkpoints must have a title.";
+			if (!cp.notes?.trim())
+				return "All checkpoints must have a description/notes.";
+		}
+		if (goal.links.length < 2) return "You must add at least 2 links.";
+		if (goal.habits.length < 3) return "You must attach at least 3 habits.";
+		return null;
+	};
+
 	const handleSubmit = async () => {
-		if (!goal.title.trim()) return alert("Please provide a title");
+		const validationError = validateGoal();
+		if (validationError) {
+			alert(validationError);
+			return;
+		}
 		try {
 			const res = await fetch("/api/goals", {
 				method: "POST",
@@ -150,9 +173,12 @@ export default function CreateGoalPage() {
 
 	return (
 		<div className="px-[5vw] py-6 max-w-5xl mx-auto text-gray-900">
-			<h2 className="pixel-sport text-[8vh] mb-6">Create Goal</h2>
+			<h2 className="pixel-sport text-[8vh] leading-[8vh]">Create Goal</h2>
+			<Link href={"/"} className=" text-[2vh] text-blue-800">
+				Dashboard
+			</Link>
 
-			<div className="space-y-6">
+			<div className="space-y-6 mt-[3vh]">
 				{/* Goal info */}
 				<div className="flex flex-col gap-4">
 					<input
@@ -163,7 +189,7 @@ export default function CreateGoalPage() {
 					/>
 					<textarea
 						className="p-3 rounded-lg bg-white border border-gray-300 text-gray-900 text-[2vh]"
-						placeholder="Description"
+						placeholder="Description (min 100 characters)"
 						value={goal.description}
 						onChange={(e) => setGoal({ ...goal, description: e.target.value })}
 					/>
@@ -185,7 +211,9 @@ export default function CreateGoalPage() {
 
 				{/* Checkpoints */}
 				<div className="space-y-3">
-					<h3 className="text-[2.5vh] font-bold">Checkpoints</h3>
+					<h3 className="pixel-sport text-[5vh] font-bold">
+						Checkpoints (min 3)
+					</h3>
 					{goal.checkpoints.map((cp, i) => (
 						<div
 							key={i}
@@ -197,12 +225,12 @@ export default function CreateGoalPage() {
 									className="text-red-500"
 									onClick={() => removeCheckpoint(i)}
 								>
-									Remove
+									<FaRegTrashAlt />
 								</button>
 							</div>
 							<input
 								className="w-full p-2 mb-2 rounded-lg bg-white border border-gray-300 text-gray-900"
-								placeholder="Title"
+								placeholder="Title (required)"
 								value={cp.title}
 								onChange={(e) => updateCheckpoint(i, "title", e.target.value)}
 							/>
@@ -214,20 +242,20 @@ export default function CreateGoalPage() {
 							/>
 							<input
 								className="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-900"
-								placeholder="Notes"
+								placeholder="Description/Notes (required)"
 								value={cp.notes}
 								onChange={(e) => updateCheckpoint(i, "notes", e.target.value)}
 							/>
 						</div>
 					))}
-					<button className="text-blue-600" onClick={addCheckpoint}>
+					<button className="text-blue-700" onClick={addCheckpoint}>
 						+ Add checkpoint
 					</button>
 				</div>
 
 				{/* Links */}
 				<div className="space-y-3">
-					<h3 className="text-[2.5vh] font-bold">Links</h3>
+					<h3 className="pixel-sport text-[5vh] font-bold">Links (min 2)</h3>
 					{goal.links.map((l, i) => (
 						<div key={i} className="flex gap-2">
 							<input
@@ -243,18 +271,20 @@ export default function CreateGoalPage() {
 								onChange={(e) => updateLink(i, "url", e.target.value)}
 							/>
 							<button className="text-red-500" onClick={() => removeLink(i)}>
-								Remove
+								<FaRegTrashAlt />
 							</button>
 						</div>
 					))}
-					<button className="text-blue-600" onClick={addLink}>
+					<button className="text-blue-700" onClick={addLink}>
 						+ Add link
 					</button>
 				</div>
 
 				{/* Habits */}
 				<div>
-					<h3 className="text-[2.5vh] font-bold mb-2">Habits</h3>
+					<h3 className="pixel-sport text-[5vh] font-bold mb-2">
+						Habits (min 3)
+					</h3>
 					<div className="flex flex-wrap gap-2 mb-2">
 						{availableHabits.map((h) => (
 							<button
@@ -279,13 +309,13 @@ export default function CreateGoalPage() {
 							onChange={(e) => setNewHabitName(e.target.value)}
 						/>
 						<button
-							className="px-3 py-1 bg-blue-600 text-white rounded-lg"
+							className="px-3 py-1 bg-blue-200 text-blue-800 font-medium rounded-lg"
 							onClick={addNewHabitToGoal}
 						>
-							Add (local)
+							Add to a goal
 						</button>
 						<button
-							className="px-3 py-1 bg-green-600 text-white rounded-lg"
+							className="px-3 py-1 bg-blue-200 text-blue-800 font-medium rounded-lg"
 							onClick={createRegularHabit}
 						>
 							Create & attach
@@ -321,7 +351,7 @@ export default function CreateGoalPage() {
 				</div>
 
 				<button
-					className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[2vh]"
+					className="w-full py-[1vh] bg-blue-200 text-blue-800 rounded-[2vh] text-[2vh]"
 					onClick={handleSubmit}
 				>
 					Save Goal

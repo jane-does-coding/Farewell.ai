@@ -1,4 +1,5 @@
 "use client";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 import { useEffect, useState } from "react";
 
@@ -93,9 +94,9 @@ export default function TodaysTasks() {
 							/>
 							<button
 								onClick={() => deleteHabit(habit.id)}
-								className="text-red-500 text-[1.5vh] px-2 py-0.5 border border-red-500 rounded hover:bg-red-500 hover:text-white transition"
+								className="text-red-500 text-[1.5vh] px-2 py-[1vh] rounded-full border border-red-500 hover:bg-red-500/20 hover:text-black transition"
 							>
-								Delete
+								<FaRegTrashAlt />
 							</button>
 						</div>
 					</div>
