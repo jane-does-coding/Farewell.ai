@@ -1,35 +1,14 @@
-# Auth Template
+# Farewell
 
-## Usage
+Video Demo: https://youtu.be/R9taBCnHErc
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
 
-Clone the project
+This website is where you set your goals and relavant habits, so you can view and track your goals vs. habits
 
-```
-git clone https://github.com/YevheniiaSimaka/Nextjs-Auth-Template
-```
+## Hard part I've overcame
 
-Install dependencies
+I've actually never built a habit tracker before, and I was attempting to build it from scratch without a tutorial or something, and I was struggling a lot with data maniputlation
 
-```
-npm i
-```
+## Tech Stack
 
-Create .env
-
-```
-DATABASE_URL=
-NEXTAUTH_SECRET=
-```
-
-Set up prisma
-
-```
-npx prisma generate
-npx prisma db push
-```
-
-Run it
-
-```
-npm run dev
-```
+Next.js, Tailwindcss, Framer-motion, Prisma, MongoDB
